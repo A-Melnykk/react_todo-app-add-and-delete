@@ -1,44 +1,55 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ErrorMessage } from '../types/ErrorMessage';
 
 interface Props {
-  todosLength: number;
-  isAllCompleted: boolean;
-  title: string;
-  setTitle: (value: string) => void;
-  onSubmit: (event: React.FormEvent) => void;
-  isSubmitting: boolean;
-  inputRef: React.RefObject<HTMLInputElement>;
+  onAddTodo: (title: string) => Promise<void>;
+  onError: (message: ErrorMessage | null) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-export const Header: React.FC<Props> = ({
-  todosLength,
-  isAllCompleted,
-  title,
-  setTitle,
-  onSubmit,
-  isSubmitting,
-  inputRef,
-}) => {
+export const Header: React.FC<Props> = ({ onAddTodo, onError, inputRef }) => {
+  const [title, setTitle] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const internalRef = useRef<HTMLInputElement>(null);
+  const activeRef = inputRef || internalRef;
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      activeRef.current?.focus();
+    }
+  }, [isSubmitting, activeRef]);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      onError(ErrorMessage.TITLE);
+
+      return;
+    }
+
+    setIsSubmitting(true);
+    onError(null);
+
+    onAddTodo(title.trim())
+      .then(() => setTitle(''))
+      .catch(() => {})
+      .finally(() => setIsSubmitting(false));
+  };
+
   return (
     <header className="todoapp__header">
-      {todosLength > 0 && (
-        <button
-          type="button"
-          className={`todoapp__toggle-all ${isAllCompleted ? 'active' : ''}`}
-          data-cy="ToggleAllButton"
-        />
-      )}
-
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
-          ref={inputRef}
-          type="text"
+          ref={activeRef}
           data-cy="NewTodoField"
+          type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
           onChange={e => setTitle(e.target.value)}
           disabled={isSubmitting}
+          autoFocus
         />
       </form>
     </header>

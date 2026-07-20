@@ -1,26 +1,24 @@
 import React from 'react';
 
-type FilterType = 'all' | 'active' | 'completed';
-
 interface Props {
-  activeTodosCount: number;
-  filter: FilterType;
-  setFilter: (filter: FilterType) => void;
-  hasCompletedTodos: boolean;
+  activeCount: number;
+  filter: 'all' | 'active' | 'completed';
+  onFilterChange: (filter: 'all' | 'active' | 'completed') => void;
+  hasCompleted: boolean;
   onClearCompleted: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
-  activeTodosCount,
+  activeCount,
   filter,
-  setFilter,
-  hasCompletedTodos,
+  onFilterChange,
+  hasCompleted,
   onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
-      <span className="todoapp__items-count" data-cy="TodosCounter">
-        {activeTodosCount} items left
+      <span className="todo-count" data-cy="TodosCounter">
+        {activeCount} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -28,7 +26,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter('all')}
+          onClick={() => onFilterChange('all')}
         >
           All
         </a>
@@ -37,7 +35,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter('active')}
+          onClick={() => onFilterChange('active')}
         >
           Active
         </a>
@@ -46,7 +44,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('completed')}
+          onClick={() => onFilterChange('completed')}
         >
           Completed
         </a>
@@ -56,7 +54,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!hasCompletedTodos}
+        disabled={!hasCompleted}
         onClick={onClearCompleted}
       >
         Clear completed

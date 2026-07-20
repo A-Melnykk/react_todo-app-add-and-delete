@@ -4,16 +4,16 @@ import { TodoItem } from './TodoItem';
 
 interface Props {
   todos: Todo[];
-  tempTodo: Todo | null;
+  onDelete: (todoId: number) => void;
   loadingTodoIds: number[];
-  onDeleteTodo: (todoId: number) => void;
+  tempTodo: Todo | null;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  tempTodo,
+  onDelete,
   loadingTodoIds,
-  onDeleteTodo,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -21,12 +21,12 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          onDelete={onDeleteTodo}
+          onDelete={onDelete}
           isLoading={loadingTodoIds.includes(todo.id)}
         />
       ))}
 
-      {tempTodo && <TodoItem todo={tempTodo} isLoading />}
+      {tempTodo && <TodoItem todo={tempTodo} onDelete={() => {}} isLoading />}
     </section>
   );
 };
